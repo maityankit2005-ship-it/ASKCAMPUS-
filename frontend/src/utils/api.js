@@ -40,15 +40,22 @@ export async function apiRequest(endpoint, options = {}) {
     },
   };
 
-  let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-  // If access token expired, try refreshing once and retry
-  if (response.status === 401 && !endpoint.startsWith('/auth/')) {
-    const newToken = await refreshAccessToken();
-    if (newToken) {
-      config.headers.Authorization = `Bearer ${newToken}`;
-      response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    // If access token expired, try refreshing once and retry
+    if (response.status === 401 && !endpoint.startsWith('/auth/')) {
+      const newToken = await refreshAccessToken();
+      if (newToken) {
+        config.headers.Authorization = `Bearer ${newToken}`;
+        response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+      }
     }
+  } catch {
+    throw new Error(
+      `Cannot connect to backend server (${API_BASE_URL}). Please make sure the backend is running.`
+    );
   }
 
   const data = await response.json().catch(() => ({}));
