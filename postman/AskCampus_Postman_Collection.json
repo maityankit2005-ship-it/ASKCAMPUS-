@@ -1,0 +1,271 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-askcampus-collection-2026",
+    "name": "AskCampus — AI FAQ Assistant API",
+    "description": "Complete Postman collection for testing AskCampus MERN API endpoints (Auth, FAQs, AI Chat, Admin Dashboard & Aggregation Reports).\n\nAuthorization Instructions:\n1. Run 'Register Student' or 'Login' (Student or Admin).\n2. Copy the returned `accessToken` into the collection variable `accessToken` (and `refreshToken` into `refreshToken`).\n3. Protected endpoints automatically use `Authorization: Bearer {{accessToken}}`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "faqId", "value": "" },
+    { "key": "chatId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Student",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"email\": \"aarav@college.edu\",\n  \"password\": \"Student@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login (Student or Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"aarav@college.edu\",\n  \"password\": \"Student@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Access Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "FAQs",
+      "item": [
+        {
+          "name": "Get All FAQs (with optional search/category)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/faqs?category=All&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["faqs"],
+              "query": [
+                { "key": "category", "value": "All" },
+                { "key": "search", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get FAQ by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/faqs/{{faqId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["faqs", "{{faqId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create FAQ (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"How do I get a bonafide certificate?\",\n  \"answer\": \"Submit a request through the Student Portal under Certificates and collect it from the Admin Office after 2 working days.\",\n  \"category\": \"Admissions\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/faqs",
+              "host": ["{{baseUrl}}"],
+              "path": ["faqs"]
+            }
+          }
+        },
+        {
+          "name": "Update FAQ (Admin Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"How do I apply for a bonafide certificate?\",\n  \"answer\": \"Apply online via the Student Portal under Certificates. It is issued within 2 working days.\",\n  \"category\": \"Admissions\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/faqs/{{faqId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["faqs", "{{faqId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete FAQ (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/faqs/{{faqId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["faqs", "{{faqId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Ask AI Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What is the minimum attendance required for exams?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chat/ask",
+              "host": ["{{baseUrl}}"],
+              "path": ["chat", "ask"]
+            }
+          }
+        },
+        {
+          "name": "Get Student Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chat/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["chat", "history"]
+            }
+          }
+        },
+        {
+          "name": "Get Single Chat Message",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chat/history/{{chatId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["chat", "history", "{{chatId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Admin Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Admin Aggregation Reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/reports",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "reports"]
+            }
+          }
+        },
+        {
+          "name": "Unanswered Questions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/unanswered",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "unanswered"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
