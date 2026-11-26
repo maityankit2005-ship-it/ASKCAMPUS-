@@ -26,7 +26,8 @@ app.use(
       if (
         !origin ||
         allowedOrigins.includes(origin) ||
-        /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)
+        /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin) ||
+        /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)
       ) {
         return callback(null, true);
       }
